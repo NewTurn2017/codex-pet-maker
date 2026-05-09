@@ -5,6 +5,7 @@ description = "Lean Codex skill for generating Codex-app-compatible animated pet
 requires-python = ">=3.11"
 dependencies = [
     "Pillow>=10.0",
+    "numpy>=1.24",
     "rembg>=2.0.50",
     "onnxruntime>=1.17",
 ]
