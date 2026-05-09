@@ -44,6 +44,16 @@ jobs:
           test -f "$RUNNER_TEMP/codex-home/skills/codex-pet-maker/install.ps1"
           test -f "$RUNNER_TEMP/codex-home/skills/codex-pet-maker/docs/assets/examples/cap-coder-spritesheet.png"
 
+      - name: Remote curl installer smoke (macOS/Linux)
+        if: runner.os != 'Windows' && github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          CODEX_HOME="$RUNNER_TEMP/codex-home-remote" CODEX_PET_MAKER_SKIP_VENV=1 \
+            sh -c 'curl -fsSL https://raw.githubusercontent.com/NewTurn2017/codex-pet-maker/main/install.sh | sh'
+          test -f "$RUNNER_TEMP/codex-home-remote/skills/codex-pet-maker/SKILL.md"
+          test -f "$RUNNER_TEMP/codex-home-remote/skills/codex-pet-maker/install.ps1"
+          test -f "$RUNNER_TEMP/codex-home-remote/skills/codex-pet-maker/docs/assets/examples/cap-coder-spritesheet.png"
+
       - name: PowerShell installer smoke (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -54,3 +64,14 @@ jobs:
           if (!(Test-Path (Join-Path $env:CODEX_HOME 'skills/codex-pet-maker/SKILL.md'))) { throw 'SKILL.md missing' }
           if (!(Test-Path (Join-Path $env:CODEX_HOME 'skills/codex-pet-maker/install.sh'))) { throw 'install.sh missing' }
           if (!(Test-Path (Join-Path $env:CODEX_HOME 'skills/codex-pet-maker/docs/assets/examples/cap-coder-spritesheet.png'))) { throw 'example asset missing' }
+
+      - name: Remote PowerShell installer smoke (Windows)
+        if: runner.os == 'Windows' && github.event_name != 'pull_request'
+        shell: pwsh
+        run: |
+          $env:CODEX_HOME = Join-Path $env:RUNNER_TEMP 'codex-home-remote'
+          $env:CODEX_PET_MAKER_SKIP_VENV = '1'
+          irm https://raw.githubusercontent.com/NewTurn2017/codex-pet-maker/main/install.ps1 | iex
+          if (!(Test-Path (Join-Path $env:CODEX_HOME 'skills/codex-pet-maker/SKILL.md'))) { throw 'remote SKILL.md missing' }
+          if (!(Test-Path (Join-Path $env:CODEX_HOME 'skills/codex-pet-maker/install.sh'))) { throw 'remote install.sh missing' }
+          if (!(Test-Path (Join-Path $env:CODEX_HOME 'skills/codex-pet-maker/docs/assets/examples/cap-coder-spritesheet.png'))) { throw 'remote example asset missing' }
