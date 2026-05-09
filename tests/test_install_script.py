@@ -7,6 +7,8 @@ import tarfile
 import zipfile
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -52,6 +54,7 @@ def _make_zip_archive(source: Path, archive: Path) -> None:
                 zf.write(path, Path("codex-pet-maker-main") / path.relative_to(source))
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell installer is covered by Linux/macOS CI")
 def test_install_script_copies_self_contained_skill_bundle(tmp_path: Path):
     codex_home = tmp_path / "codex-home"
     env = {
@@ -78,6 +81,7 @@ def test_install_script_copies_self_contained_skill_bundle(tmp_path: Path):
     assert not (target / "pet_request.json").exists()
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell installer is covered by Linux/macOS CI")
 def test_install_script_works_from_a_copied_repository(tmp_path: Path):
     copied = tmp_path / "copied-codex-pet-maker"
     _copy_repo_without_local_artifacts(ROOT, copied)
@@ -96,6 +100,7 @@ def test_install_script_works_from_a_copied_repository(tmp_path: Path):
     assert "codex-pet-maker installed" in res.stdout
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell installer is covered by Linux/macOS CI")
 def test_install_script_can_run_from_installed_target_without_recursing(tmp_path: Path):
     target = tmp_path / "codex-home" / "skills" / "codex-pet-maker"
     env = {
@@ -113,6 +118,7 @@ def test_install_script_can_run_from_installed_target_without_recursing(tmp_path
     assert (target / "SKILL.md").exists()
 
 
+@pytest.mark.skipif(os.name == "nt", reason="POSIX shell installer is covered by Linux/macOS CI")
 def test_curl_pipe_mode_installs_from_archive_without_local_checkout(tmp_path: Path):
     copied = tmp_path / "archive-source"
     _copy_repo_without_local_artifacts(ROOT, copied)
@@ -139,8 +145,6 @@ def test_curl_pipe_mode_installs_from_archive_without_local_checkout(tmp_path: P
 def test_powershell_remote_installer_from_archive_when_pwsh_available(tmp_path: Path):
     pwsh = shutil.which("pwsh") or shutil.which("powershell")
     if not pwsh:
-        import pytest
-
         pytest.skip("PowerShell is not installed")
 
     copied = tmp_path / "archive-source"

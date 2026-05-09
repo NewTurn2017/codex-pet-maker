@@ -39,6 +39,8 @@ CELL_H = 208
 GRID_COLS = 8
 GRID_ROWS = 9
 
+_LAST_RUN_TOKEN = 0
+
 
 def slugify(value: str) -> str:
     value = value.strip().lower()
@@ -51,9 +53,16 @@ def slugify(value: str) -> str:
 
 
 def new_run_id(slug: str) -> str:
-    stamp = time.strftime("%Y%m%dT%H%M%S", time.gmtime())
-    nano = time.time_ns() % 1_000_000
-    return f"{stamp}-{nano:06d}-{slug}"
+    global _LAST_RUN_TOKEN
+
+    token = time.time_ns()
+    if token <= _LAST_RUN_TOKEN:
+        token = _LAST_RUN_TOKEN + 1
+    _LAST_RUN_TOKEN = token
+
+    stamp = time.strftime("%Y%m%dT%H%M%S", time.gmtime(token // 1_000_000_000))
+    nano = token % 1_000_000_000
+    return f"{stamp}-{nano:09d}-{slug}"
 
 
 def write_manifest(path: Path, data: dict[str, Any]) -> None:
