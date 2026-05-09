@@ -12,10 +12,11 @@ eliminating the green-halo failure mode at sprite edges.
 2. Install Python deps:
 
    ```bash
-   pip install -e .[dev]
+   pip install -e '.[dev]'
    ```
 
-   (or `pip install rembg onnxruntime Pillow numpy` if you prefer the bare runtime deps.)
+   (the quotes matter on zsh — `[dev]` is otherwise interpreted as a glob.
+   Or `pip install rembg onnxruntime Pillow numpy` if you prefer the bare runtime deps.)
 
 3. First run downloads the U2Net model (~150 MB) into `~/.u2net/`.
 
