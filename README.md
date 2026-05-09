@@ -252,18 +252,19 @@ REMBG_SMOKE=1 pytest -m slow
 
 ---
 
-## 📦 Release checklist
+## 📦 Release status
 
-Before sharing the repository:
+This repository is ready to copy, fork, or install directly from GitHub. The
+`Install smoke` GitHub Actions workflow verifies the public install surface on
+Linux, macOS, and Windows:
 
-- [ ] `curl -fsSL <raw install.sh> | sh` succeeds on macOS/Linux
-- [ ] `irm <raw install.ps1> | iex` succeeds on Windows PowerShell
-- [ ] `./install.sh` succeeds from a fresh copied folder
-- [ ] `.\install.ps1` succeeds from a fresh copied folder on Windows
-- [ ] `pytest -q` passes
-- [ ] README image path renders on GitHub
-- [ ] `SKILL.md` still matches the script commands
-- [ ] no local artifacts are tracked: `.venv/`, `.omx/`, `pet-runs/`, `pet_request.json`
+- [x] `curl -fsSL https://raw.githubusercontent.com/NewTurn2017/codex-pet-maker/main/install.sh | sh`
+- [x] `irm https://raw.githubusercontent.com/NewTurn2017/codex-pet-maker/main/install.ps1 | iex`
+- [x] `./install.sh` from a checked-out repository
+- [x] `.\install.ps1` from a checked-out repository on Windows
+- [x] `pytest -q`
+- [x] bundled README example spritesheet path
+- [x] no required local artifacts: `.venv/`, `.omx/`, `pet-runs/`, `pet_request.json`
 
 ---
 
