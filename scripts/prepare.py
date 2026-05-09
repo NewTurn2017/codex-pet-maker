@@ -137,7 +137,7 @@ def main(argv: list[str] | None = None) -> int:
         "display_name": name,
         "rows": list(petio.ROW_NAMES),
         "frame_counts": petio.ROW_FRAME_COUNTS,
-        "next_action": "image_gen base.png and per-row strips",
+        "next_action": "use built-in Codex image_gen for base.png and per-row strips",
     }
     print(json.dumps(status, indent=2))
     return 0

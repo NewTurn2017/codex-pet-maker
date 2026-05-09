@@ -36,6 +36,7 @@ def test_prepare_creates_run_dir(tmp_path: Path):
     assert (run_dir / "frames").is_dir()
     assert (run_dir / "final").is_dir()
     assert (run_dir / "qa").is_dir()
+    assert status["next_action"] == "use built-in Codex image_gen for base.png and per-row strips"
 
 
 def test_prepare_substitutes_variables(tmp_path: Path):

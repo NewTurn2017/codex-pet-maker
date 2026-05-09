@@ -16,6 +16,11 @@ ${CODEX_HOME:-$HOME/.codex}/pets/<pet-id>/
 
 It replaces chroma-key sprite cleanup with `rembg` + alpha matting, so generated pets can ship with real transparency instead of green-screen halos.
 
+The creative source images are generated through Codex's built-in `image_gen`
+tool. This skill does **not** bundle or require the separate `gpt-image` skill,
+and it should not fall back to hand-drawn/vector/script-generated placeholder
+sheets for pet delivery.
+
 ---
 
 ## ✨ One-line install
@@ -171,9 +176,10 @@ The image is included as documentation/example material. The install script copi
 
 ---
 
-## 🛠️ Manual pipeline
+## 🛠️ Debug pipeline
 
-Normally Codex runs this through the skill. If you need to debug by hand, run from the repo root.
+Normally Codex runs this through the skill. If you need to debug the deterministic
+post-processing steps by hand, run from the repo root.
 
 If installed with `./install.sh`, prefer the local venv Python:
 
@@ -199,7 +205,8 @@ Prepare a run:
 $PY -m scripts.prepare --request ./pet_request.json --output-dir ./pet-runs
 ```
 
-Codex then calls image generation for the base character and each row, records each PNG, and continues:
+Codex then calls the built-in `image_gen` tool for the base character and each
+row, records each generated PNG, and continues:
 
 ```bash
 $PY -m scripts.matte --run-dir ./pet-runs/<run_id>
@@ -208,6 +215,10 @@ $PY -m scripts.atlas --run-dir ./pet-runs/<run_id>
 $PY -m scripts.qa --run-dir ./pet-runs/<run_id>
 $PY -m scripts.package --run-dir ./pet-runs/<run_id>
 ```
+
+Do not replace the generation phase with manually drawn/vector/script-generated
+sprite sheets. The scripts are for post-processing real image-generation output:
+record → matte → extract → atlas → QA → package.
 
 The final package lands in:
 

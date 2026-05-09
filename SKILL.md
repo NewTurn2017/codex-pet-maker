@@ -13,8 +13,15 @@ when_to_use: |
 
 # codex-pet-maker
 
-You are the Codex agent driving a deterministic Python pipeline plus the built-in `image_gen` tool.
+You are the Codex agent driving a deterministic Python pipeline plus the built-in Codex `image_gen` tool.
 The skill produces `${CODEX_HOME:-$HOME/.codex}/pets/<slug>/{pet.json, spritesheet.webp}`.
+
+## Image generation authority
+
+- Use **Codex's built-in `image_gen` tool** for every creative image in the pet pipeline: the base character, all row strips, and any temporary visual check image.
+- Do **not** satisfy a pet request with a hand-drawn/vector/script-generated/manual placeholder sheet. Python scripts are only for deterministic post-processing: recording outputs, alpha matting, frame extraction, atlas assembly, QA, and packaging.
+- Do **not** require or assume the separate `gpt-image` skill. It is not installed by this skill's `install.sh` / `install.ps1` flow. If a user explicitly asks for `gpt-image` and that skill is available, it may be used as an external override, but the default and self-contained workflow remains built-in `image_gen`.
+- If you need a quick identity preview before creating all 9 rows, generate the preview with built-in `image_gen`, record it as `base`, and continue or regenerate from there. Never switch to manual drawing as a shortcut.
 
 ## Read first
 
@@ -59,7 +66,7 @@ Records `run_dir`, prints status JSON. Reads `prompts/style.md`, `prompts/base.m
 substitutes `{{pet_name}}`, `{{pet_description}}`, `{{style_block}}`, writes rendered prompts into
 `<run_dir>/prompts/`.
 
-### 2. base.png (1 image_gen call)
+### 2. base.png (1 built-in image_gen call)
 
 Read `<run_dir>/prompts/base.md`. Call the built-in `image_gen` tool with that prompt and any user
 reference images. Save the returned PNG to a temp path. Then ingest:
@@ -68,7 +75,7 @@ reference images. Save the returned PNG to a temp path. Then ingest:
 $PY -m scripts.record --run-dir <run_dir> --row base --source <tmp.png>
 ```
 
-### 3. row strips (9 image_gen calls)
+### 3. row strips (9 built-in image_gen calls)
 
 For each row in this order — `idle, running-right, running-left, waving, jumping, failed, waiting, running, review`:
 
