@@ -5,3 +5,6 @@ __pycache__/
 pet-runs/
 .u2net/
 *.egg-info/
+.omx/
+pet_request.json
+uv.lock

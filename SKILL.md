@@ -42,10 +42,17 @@ Save these to a JSON file before running `prepare.py`:
 
 Run from the repo root. All scripts accept `--run-dir`. Default the run output under `./pet-runs/`.
 
+If the skill was installed with `./install.sh`, prefer the bundled virtualenv Python:
+
+```bash
+PY=./.venv/bin/python
+[ -x "$PY" ] || PY=python
+```
+
 ### 1. prepare
 
 ```bash
-python -m scripts.prepare --request ./pet_request.json --output-dir ./pet-runs
+$PY -m scripts.prepare --request ./pet_request.json --output-dir ./pet-runs
 ```
 
 Records `run_dir`, prints status JSON. Reads `prompts/style.md`, `prompts/base.md`, `prompts/rows/*.md`,
@@ -58,7 +65,7 @@ Read `<run_dir>/prompts/base.md`. Call the built-in `image_gen` tool with that p
 reference images. Save the returned PNG to a temp path. Then ingest:
 
 ```bash
-python -m scripts.record --run-dir <run_dir> --row base --source <tmp.png>
+$PY -m scripts.record --run-dir <run_dir> --row base --source <tmp.png>
 ```
 
 ### 3. row strips (9 image_gen calls)
@@ -71,7 +78,7 @@ For each row in this order — `idle, running-right, running-left, waving, jumpi
 3. Save returned PNG to a temp path.
 4. Ingest:
    ```bash
-   python -m scripts.record --run-dir <run_dir> --row <row> --source <tmp.png>
+   $PY -m scripts.record --run-dir <run_dir> --row <row> --source <tmp.png>
    ```
 
 You may parallelize rows via subagents if you need throughput; serial is fine.
@@ -79,7 +86,7 @@ You may parallelize rows via subagents if you need throughput; serial is fine.
 ### 4. matte (background removal)
 
 ```bash
-python -m scripts.matte --run-dir <run_dir>
+$PY -m scripts.matte --run-dir <run_dir>
 ```
 
 Skips rows whose `matte/<row>.png` already exists. To redo: pass `--force`.
@@ -88,7 +95,7 @@ First run downloads U2Net (~150 MB) into `~/.u2net/`.
 ### 5. extract (per-cell frames)
 
 ```bash
-python -m scripts.extract --run-dir <run_dir>
+$PY -m scripts.extract --run-dir <run_dir>
 ```
 
 Exit code 5 means a row's component count didn't match the expected frame count. The manifest will
@@ -104,7 +111,7 @@ transparent. Mention the failed row in your final report so the user can rerun i
 ### 6. atlas
 
 ```bash
-python -m scripts.atlas --run-dir <run_dir>
+$PY -m scripts.atlas --run-dir <run_dir>
 ```
 
 Always cheap — runs on every pass.
@@ -112,7 +119,7 @@ Always cheap — runs on every pass.
 ### 7. qa
 
 ```bash
-python -m scripts.qa --run-dir <run_dir>
+$PY -m scripts.qa --run-dir <run_dir>
 ```
 
 Exit code 6 means a hard check failed; do not proceed. Read `<run_dir>/qa/review.json` to see why.
@@ -121,7 +128,7 @@ Inspect `<run_dir>/qa/contact-sheet.png` to spot identity drift, halos, or wrong
 ### 8. package
 
 ```bash
-python -m scripts.package --run-dir <run_dir>
+$PY -m scripts.package --run-dir <run_dir>
 ```
 
 Writes `${CODEX_HOME:-$HOME/.codex}/pets/<slug>/{pet.json, spritesheet.webp}`. Refuses to clobber
@@ -135,15 +142,15 @@ The whole pipeline is resumable. Each script skips work that's already on disk. 
 rm <run_dir>/decoded/<row>.png <run_dir>/matte/<row>.png
 rm -rf <run_dir>/frames/<row>
 # … then redo image_gen + record + matte + extract for that row …
-python -m scripts.atlas --run-dir <run_dir>
-python -m scripts.qa --run-dir <run_dir>
-python -m scripts.package --run-dir <run_dir> --force
+$PY -m scripts.atlas --run-dir <run_dir>
+$PY -m scripts.qa --run-dir <run_dir>
+$PY -m scripts.package --run-dir <run_dir> --force
 ```
 
 To resume a previous run instead of starting fresh:
 
 ```bash
-python -m scripts.prepare --request ./pet_request.json --output-dir ./pet-runs --resume <run_id>
+$PY -m scripts.prepare --request ./pet_request.json --output-dir ./pet-runs --resume <run_id>
 ```
 
 ## Errors you'll see
